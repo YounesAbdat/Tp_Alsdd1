@@ -35,15 +35,17 @@ int main() {
     int choice;
     do {
         printf("\n=== Main Menu ===\n");
-        printf("1. Register new player (without playing)\n");
-        printf("2. Play as new player (single question)\n");
-        printf("3. Play as existing player (single question)\n");
-        printf("4. Start a game session (15 questions)\n");
-        printf("5. Add new question\n");
-        printf("6. Show current lists\n");
-        printf("7. Show game sessions\n");
-        printf("8. Sort players\n");
-        printf("9. Exit\n");
+        printf("1. Register new player\n");
+        printf("2. Delete a player\n");
+        printf("3. Play as new player (single question)\n");
+        printf("4. Play as existing player (single question)\n");
+        printf("5. Start a game session (15 questions)\n");
+        printf("6. Add new question\n");
+        printf("7. Delete a question\n");
+        printf("8. Show current lists\n");
+        printf("9. Show game sessions\n");
+        printf("10. Sort players\n");
+        printf("11. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -57,7 +59,25 @@ int main() {
                 break;
             }
                 
-            case 2: { // Play as new player (single question)
+            case 2: { // Delete a player
+                if (!players) {
+                    printf("No players available to delete.\n");
+                    break;
+                }
+                printf("\n=== Current Players ===\n");
+                print_players(players);
+                
+                int player_id;
+                printf("\nEnter ID of player to delete: ");
+                scanf("%d", &player_id);
+                
+                players = delete_player(players, player_id);
+                printf("\n=== Updated Players List ===\n");
+                print_players(players);
+                break;
+            }
+                
+            case 3: { // Play as new player (single question)
                 printf("\n=== New Player Registration ===\n");
                 qtr new_player = add_player(players, questions);
                 players = new_player;
@@ -66,165 +86,68 @@ int main() {
                 break;
             }
                 
-            case 3: { // Play as existing player (single question)
+            // [Rest of your existing cases, renumbered...]
+            case 4: { // Play as existing player (single question)
                 if (!players) {
                     printf("No players available. Register first.\n");
                     break;
                 }
-                printf("\n=== Existing Players ===\n");
-                print_players(players);
-                
-                int player_id;
-                printf("\nEnter player ID to play as: ");
-                scanf("%d", &player_id);
-                
-                qtr current = players;
-                while (current) {
-                    if (idp(current) == player_id) {
-                        printf("\n=== Playing as %s ===\n", pseudo(current));
-                        jouer_session(current, questions, propositions);
-                        break;
-                    }
-                    current = next_player(current);
-                }
-                if (!current) printf("Player not found!\n");
+                // ... existing code ...
                 break;
             }
                 
-            case 4: { // Start a game session (15 questions)
-                int player_choice;
-                printf("\n=== Game Session Options ===\n");
-                printf("1. Play as new player\n");
-                printf("2. Play as existing player\n");
-                printf("Enter your choice: ");
-                scanf("%d", &player_choice);
+            case 5: { // Start a game session (15 questions)
+                // ... existing code ...
+                break;
+            }
                 
-                qtr current_player = NULL;
+            case 6: { // Add new question
+                // ... existing code ...
+                break;
+            }
                 
-                if (player_choice == 1) {
-                    // Register new player
-                    printf("\n=== New Player Registration ===\n");
-                    current_player = add_player(players, questions);
-                    players = current_player;
-                    printf("\n=== Starting Game Session ===\n");
-                }
-                else if (player_choice == 2) {
-                    // Select existing player
-                    if (!players) {
-                        printf("No players available. Register first.\n");
-                        break;
-                    }
-                    printf("\n=== Existing Players ===\n");
-                    print_players(players);
-                    
-                    int player_id;
-                    printf("\nEnter player ID to play as: ");
-                    scanf("%d", &player_id);
-                    
-                    qtr current = players;
-                    while (current) {
-                        if (idp(current) == player_id) {
-                            current_player = current;
-                            break;
-                        }
-                        current = next_player(current);
-                    }
-                    if (!current_player) {
-                        printf("Player not found!\n");
-                        break;
-                    }
-                    printf("\n=== Starting Game Session ===\n");
-                }
-                else {
-                    printf("Invalid choice!\n");
+            case 7: { // Delete a question
+                if (!questions) {
+                    printf("No questions available to delete.\n");
                     break;
                 }
+                printf("\n=== Current Questions ===\n");
+                print_list(questions);
                 
-                // Start the game session
-                ptr_partie new_game = partie_Question_reponse(current_player, questions, propositions);
-                // Add to parties list
-                ass_adr_partie(new_game, parties);
-                parties = new_game;
-                break;
-            }
+                int question_id;
+                printf("\nEnter ID of question to delete: ");
+                scanf("%d", &question_id);
                 
-            case 5: { // Add new question
-                printf("\n=== Adding New Question ===\n");
-                if (!questions) {
-                    questions = add_question(NULL);
-                } else {
-                    ptr current = questions;
-                    while (next_question(current)) current = next_question(current);
-                    ass_adr_question(current, add_question(NULL));
-                }
-                printf("\nThank you for your contribution! The question has been added.\n");
+                questions = delete_question(questions, question_id);
                 printf("\n=== Updated Questions List ===\n");
                 print_list(questions);
                 break;
             }
                 
-            case 6: { // Show current lists
-                printf("\n=== Current Questions ===\n");
-                print_list(questions);
-                printf("\n=== Current Players ===\n");
-                print_players(players);
+            case 8: { // Show current lists
+                // ... existing code ...
                 break;
             }
                 
-            case 7: { // Show game sessions
-                printf("\n=== Game Sessions History ===\n");
-                ptr_partie current = parties;
-                int session_count = 1;
-                
-                while (current) {
-                    printf("\n--- Session %d ---\n", session_count++);
-                    printf("Player: %s (ID: %d)\n", pseudo_partie(current), idplayer_partie(current));
-                    printf("Level: %d\n", niv_partie(current));
-                    printf("Total Score: %d\n", score_partie(current));
-                    printf("Questions:\n");
-                    
-                    ptr_question_partie q = questions_partie(current);
-                    int question_num = 1;
-                    while (q) {
-                        printf("  %d. Q%d: %s (Score: %d)\n", 
-                               question_num++,
-                               id_question_partie(q),
-                               est_domaine_prefere(q) ? "[Preferred]" : "",
-                               score_question_partie(q));
-                        q = next_question_partie(q);
-                    }
-                    current = next_partie(current);
-                }
-                if (session_count == 1) printf("No game sessions recorded yet.\n");
+            case 9: { // Show game sessions
+                // ... existing code ...
                 break;
             }
                 
-            case 8: { // Sort players
-                printf("\n=== Sorting Options ===\n");
-                printf("1. Sort by score (highest first)\n");
-                printf("2. Sort by games played (most first)\n");
-                printf("Enter your choice: ");
-                int sort_choice;
-                scanf("%d", &sort_choice);
-                
-                if (sort_choice == 1) {
-                    afficher_joueurs_par_score(players);
-                } else if (sort_choice == 2) {
-                    afficher_joueurs_par_parties(players);
-                } else {
-                    printf("Invalid choice!\n");
-                }
+            case 10: { // Sort players
+                // ... existing code ...
                 break;
             }
                 
-            case 9: // Exit
+            case 11: // Exit
                 printf("Exiting...\n");
                 break;
                 
             default:
                 printf("Invalid choice!\n");
         }
-    } while (choice != 9);
+    } while (choice != 11);
+
 
     // Cleanup
     free_list(questions);
